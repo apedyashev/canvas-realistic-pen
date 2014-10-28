@@ -18,17 +18,17 @@ Options:
 --------
   penColor       -  Color of the pen. Allowed formats: 
                     Array - [0, 0, 0], Hex - #ccc, #cfc4c1, rgb(1, 2, 3), rgba(1, 2, 3, 0)
-  brushPressure: - opacity of line
-  brushSize:     - widht of line
-  brushesCount   - Count of lines that will be used to draw
+  - brushPressure: - opacity of line
+  - brushSize:     - widht of line
+  - brushesCount   - Count of lines that will be used to draw
 
 Interface:
 ----------
-  destroy()                           - destroys the pen
-  setPenColor(inColor)                - sets penColor 
-  setBrushPressure(inBrushPressure)   - sets brushPressure
-  setBrushSize(inBrushSize)           - sets brushSize
-  setBrushesCount(inBrushesCount)     - sets brushesCount
+  - destroy()                           - destroys the pen
+  - setPenColor(inColor)                - sets penColor 
+  - setBrushPressure(inBrushPressure)   - sets brushPressure
+  - setBrushSize(inBrushSize)           - sets brushSize
+  - setBrushesCount(inBrushesCount)     - sets brushesCount
 
 Example:
 --------
@@ -40,5 +40,7 @@ Example:
       brushSize: 3,
       brushesCount: 5
   });
+  brush.setPenColor('#cfa');
+  brush.setBrushSize(5);
 ```
 
