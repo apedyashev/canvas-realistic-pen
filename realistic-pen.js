@@ -1,3 +1,37 @@
+/**
+* Library for smooth pen-like drawing on canvas
+* 
+* This is refactored and enhanced version of code taken from this post: http://stackoverflow.com/a/10661872/2248909
+*
+* Authors: 
+*   - mrdob.com
+*   - Alex <http://stackoverflow.com/users/873836/alex>
+*   - Alexey Pedyashev
+* 
+* Options:
+*   penColor       -  Color of the pen. Allowed formats: 
+*                     Array - [0, 0, 0], Hex - #ccc, #cfc4c1, rgb(1, 2, 3), rgba(1, 2, 3, 0)
+*   brushPressure: - opacity of line
+*   brushSize:     - widht of line
+*   brushesCount   - Count of lines that will be used to draw
+*
+* Interface:
+*   destroy()                           - destroys the pen
+*   setPenColor(inColor)                - sets penColor 
+*   setBrushPressure(inBrushPressure)   - sets brushPressure
+*   setBrushSize(inBrushSize)           - sets brushSize
+*   setBrushesCount(inBrushesCount)     - sets brushesCount
+*
+* Example:
+*   var canvas          = document.getElementById('draw-canvas');
+*   brush = new RealisticPen(canvas, {
+*       penColor: [217, 101, 110],
+*       brushPressure: 1,
+*       brushSize: 3,
+*       brushesCount: 5
+*   });
+*
+*/
 function RealisticPen(inCanvas, inOptions) {
     var _context = null,
         _mouseX = null, 
@@ -18,12 +52,31 @@ function RealisticPen(inCanvas, inOptions) {
         clearInterval(_updateInterval);
     };
 
+    this.setPenColor = function(inColor) {
+        _options.penColor = _ensureRgb(inColor);
+    };
+
+    this.setBrushPressure = function(inBrushPressure) {
+        _options.brushPressure = inBrushPressure;
+    };
+
+    this.setBrushSize = function(inBrushSize) {
+        _options.brushSize = inBrushSize;
+    };
+
+    this.setBrushesCount = function(inBrushesCount) {
+        _options.brushesCount = inBrushesCount;
+    };
+
+
     function _init( inCanvas, inOptions ) {
         var container = inCanvas.parentNode;
 
         if (inOptions) {
             _options = _extend(_options, inOptions);    
         }
+
+        _options.penColor = _ensureRgb(_options.penColor);
         
         inCanvas.width    = container.offsetWidth ? container.offsetWidth : _canvasDefWidth;
         inCanvas.height   = container.offsetHeight ? container.offsetHeight : _canvasDefHeight;
@@ -44,9 +97,8 @@ function RealisticPen(inCanvas, inOptions) {
                 ax: 0, 
                 ay: 0, 
                 div: 0.1, 
-                // ease: Math.random() * 0.1 + 0.4
                 ease: 0.5 + i*0.005
-            });//Math.random() * 0.1 + 0.2});
+            }); 
         }
         _updateInterval = setInterval(update, 1000/60);
         function update() {
@@ -141,6 +193,40 @@ function RealisticPen(inCanvas, inOptions) {
             object[key] = val;
         }
         return object;
+    }
+
+    function _ensureRgb(color){
+        var colorsArray = [0, 0, 0];
+        if (/^#./.test(color)) {
+            colorsArray = _hexToRgbArray(color);
+        }
+        else if (/^rgb\(./.test(color)) {
+            colorsArray = color.substring(4, color.length-1)
+                 .replace(/ /g, '')
+                 .split(',');
+        }
+        else if (/^rgba\(./.test(color)) {
+            colorsArray = color.substring(5, color.length-1)
+                 .replace(/ /g, '')
+                 .split(',');
+            colorsArray.pop();
+        }
+        else if(Object.prototype.toString.call( color ) === '[object Array]' ) {
+            colorsArray = color;
+        }
+
+        return colorsArray;
+    }
+
+    function _hexToRgbArray(hex) {
+        // Expand shorthand form (e.g. "03F") to full form (e.g. "0033FF")
+        var shorthandRegex = /^#?([a-f\d])([a-f\d])([a-f\d])$/i;
+        hex = hex.replace(shorthandRegex, function(m, r, g, b) {
+            return r + r + g + g + b + b;
+        });
+
+        var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+        return result ? [parseInt(result[1], 16), parseInt(result[2], 16), parseInt(result[3], 16)] : [0, 0, 0];
     }
 
     _init(inCanvas, inOptions);

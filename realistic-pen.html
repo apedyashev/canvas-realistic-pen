@@ -44,15 +44,15 @@
 
         <script type="text/javascript">
           window.canvas          = document.getElementById('draw-canvas');
-          new RealisticPen(canvas, {
-            penColor: [217, 101, 110],
+          window.brush1 = new RealisticPen(canvas, {
+            penColor: '#cf5',
             brushPressure: 1,
             brushSize: 3,
             brushesCount: 5
           });
 
           window.canvas2          = document.getElementById('draw-canvas-2');
-          new RealisticPen(canvas2, {
+          window.brush2 = new RealisticPen(canvas2, {
             penColor: [0, 150, 0],
             brushPressure: 0.5,
             brushSize: 2
