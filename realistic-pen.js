@@ -15,7 +15,7 @@ function RealisticPen(inCanvas, inOptions) {
 
     this.destroy = function() {
         clearInterval(_updateInterval);
-    }
+    };
 
     function _init( inCanvas, inOptions ) {
         var container = inCanvas.parentNode;
@@ -139,7 +139,7 @@ function RealisticPen(inCanvas, inOptions) {
             object[key] = val;
         }
         return object;
-    };
+    }
 
     _init(inCanvas, inOptions);
 }
