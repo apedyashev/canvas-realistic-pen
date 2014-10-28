@@ -239,7 +239,7 @@ function RealisticPen(inCanvas, inOptions) {
             box = { top: 0, left: 0 },
             doc = elem && elem.ownerDocument,
             isWindow = function( obj ) {
-                return obj != null && obj === obj.window;
+                return obj !== null && obj === obj.window;
             },
             getWindow = function ( elem ) {
                 return isWindow( elem ) ? elem : elem.nodeType === 9 && elem.defaultView;
