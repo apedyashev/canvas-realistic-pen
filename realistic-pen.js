@@ -10,7 +10,8 @@ function RealisticPen(inCanvas, inOptions) {
         _options = {
             penColor: [0, 0, 0],
             brushPressure: 1,
-            brushSize: 3
+            brushSize: 3,
+            brushesCount: 4
         };
 
     this.destroy = function() {
@@ -36,14 +37,15 @@ function RealisticPen(inCanvas, inOptions) {
         _mouseX = _canvas.width / 2;
         _mouseY = _canvas.height / 2;
         _painters = [];
-        for (var i = 0; i < 50; i++) {
+        for (var i = 0; i < _options.brushesCount; i++) {
             _painters.push({ 
                 dx: _canvas.width / 2, 
                 dy: _canvas.height / 2, 
                 ax: 0, 
                 ay: 0, 
                 div: 0.1, 
-                ease: 0.5
+                // ease: Math.random() * 0.1 + 0.4
+                ease: 0.5 + i*0.005
             });//Math.random() * 0.1 + 0.2});
         }
         _updateInterval = setInterval(update, 1000/60);
@@ -51,7 +53,7 @@ function RealisticPen(inCanvas, inOptions) {
             var i;
             _context.lineWidth = _options.brushSize;            
             _context.strokeStyle =  "rgba(" + _options.penColor[0] + ", " + 
-                _options.penColor[1] + ", " + _options.penColor[2] + ", " + 0.05 * _options.brushPressure + ")";
+                _options.penColor[1] + ", " + _options.penColor[2] + ",  " + _options.brushPressure + ")";
             for (i = 0; i < _painters.length; i++) {
                 _context.beginPath();
                 _context.moveTo(_painters[i].dx, _painters[i].dy);        

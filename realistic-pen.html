@@ -31,27 +31,37 @@
         <div id="canvas-container">
           <canvas id="draw-canvas"/> 
         </div>
+        <button onclick="clearCanvas(window.canvas)">Clear</button>
+
+        <hr>
 
         <div id="canvas-container">
           <canvas id="draw-canvas-2"/> 
         </div>
+        <button onclick="clearCanvas(window.canvas2)">Clear</button>
 
         <script src="./realistic-pen.js"></script>
 
         <script type="text/javascript">
-          var canvas          = document.getElementById('draw-canvas');
+          window.canvas          = document.getElementById('draw-canvas');
           new RealisticPen(canvas, {
-            penColor: [150, 0, 0],
+            penColor: [217, 101, 110],
             brushPressure: 1,
-            brushSize: 3
+            brushSize: 3,
+            brushesCount: 5
           });
 
-          var canvas2          = document.getElementById('draw-canvas-2');
+          window.canvas2          = document.getElementById('draw-canvas-2');
           new RealisticPen(canvas2, {
             penColor: [0, 150, 0],
-            brushPressure: 1,
+            brushPressure: 0.5,
             brushSize: 2
           });
+
+          function clearCanvas(canvas){
+            var ctx = canvas.getContext("2d");
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+          }
         </script>
          
     </body>
