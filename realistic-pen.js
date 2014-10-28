@@ -1,8 +1,8 @@
-function ribbon( context ){
+function RealisticPen( context ){
     this.init( context );
 }
 
-ribbon.prototype = {
+RealisticPen.prototype = {
     context: null,
     mouseX: null, 
     mouseY: null,

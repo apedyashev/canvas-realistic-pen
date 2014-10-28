@@ -19,6 +19,7 @@
           width: 50%; 
           height: 250px;
           border: 1px solid black;
+          margin-bottom: 10px;
         }
         </style>
     </head>
@@ -31,11 +32,18 @@
           <canvas id="draw-canvas"/> 
         </div>
 
-        <script src="ribbon.js"></script>
+        <div id="canvas-container">
+          <canvas id="draw-canvas-2"/> 
+        </div>
+
+        <script src="./realistic-pen.js"></script>
 
         <script type="text/javascript">
           var canvas          = document.getElementById('draw-canvas');
-          new ribbon(canvas);
+          new RealisticPen(canvas);
+
+          var canvas2          = document.getElementById('draw-canvas-2');
+          new RealisticPen(canvas2);
         </script>
          
     </body>

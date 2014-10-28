@@ -4,10 +4,21 @@ module.exports = function(grunt) {
           options: {
               reporter: require('jshint-stylish')
           },
-          target: ['ribbon.js']
+          target: ['realistic-pen.js']
+      },
+
+      uglify: {
+        src: {
+          files: {
+            'realistic-pen.min.js': ['realistic-pen.js']
+          }
+        }
       }
   });
 
   grunt.loadNpmTasks('grunt-contrib-jshint');
+  grunt.loadNpmTasks('grunt-contrib-uglify');
+
   grunt.registerTask('default', ['jshint']);
+  grunt.registerTask('dist', ['jshint', 'uglify:src']);
 };
