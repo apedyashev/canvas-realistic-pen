@@ -39,6 +39,7 @@ function RealisticPen(inCanvas, inOptions) {
         _painters = null,
         _updateInterval = null,
         _canvas = null,
+        _container = null,
         _canvasDefWidth = 200,
         _canvasDefHeight = 200,
         _options = {
@@ -70,7 +71,7 @@ function RealisticPen(inCanvas, inOptions) {
 
 
     function _init( inCanvas, inOptions ) {
-        var container = inCanvas.parentNode;
+        _container = inCanvas.parentNode;
 
         if (inOptions) {
             _options = _extend(_options, inOptions);    
@@ -78,8 +79,7 @@ function RealisticPen(inCanvas, inOptions) {
 
         _options.penColor = _ensureRgb(_options.penColor);
         
-        inCanvas.width    = container.offsetWidth ? container.offsetWidth : _canvasDefWidth;
-        inCanvas.height   = container.offsetHeight ? container.offsetHeight : _canvasDefHeight;
+        
 
         _canvas  = inCanvas;
         _context = _canvas.getContext("2d");
@@ -179,10 +179,17 @@ function RealisticPen(inCanvas, inOptions) {
                     _canvas.removeEventListener('touchmove', onCanvasTouchMove, false);
                     _canvas.removeEventListener('touchend', onCanvasTouchEnd, false);
                 }
+            },
+            onCanvasResize = function() {
+                _canvas.width    = _container.offsetWidth ? _container.offsetWidth : _canvasDefWidth;
+                _canvas.height   = _container.offsetHeight ? _container.offsetHeight : _canvasDefHeight;
             };
 
         _canvas.addEventListener('mousedown', onCanvasMouseDown, false);
         _canvas.addEventListener('touchstart', onCanvasTouchStart, false);
+        window.addEventListener('resize', onCanvasResize, false);
+
+        onCanvasResize();
     }
 
     function _extend(object, properties) {
