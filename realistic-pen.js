@@ -1,130 +1,146 @@
-function RealisticPen( context ){
-    this.init( context );
-}
+function RealisticPen(inCanvas, inOptions) {
+    var _context = null,
+        _mouseX = null, 
+        _mouseY = null,
+        _painters = null,
+        _updateInterval = null,
+        _canvas = null,
+        _canvasDefWidth = 200,
+        _canvasDefHeight = 200,
+        _options = {
+            penColor: [0, 0, 0],
+            brushPressure: 1,
+            brushSize: 3
+        };
 
-RealisticPen.prototype = {
-    context: null,
-    mouseX: null, 
-    mouseY: null,
-    painters: null,
-    interval: null,
-    canvas: null,
-    penColor: [0, 0, 0],
-    brushPressure: 1,
-    brushSize: 3,
-    canvasDefWidth: '200',
-    canvasDefHeight: 200,
+    this.destroy = function() {
+        clearInterval(_updateInterval);
+    }
 
-    init: function( canvas ) {
-        var scope = this, 
-            container = canvas.parentNode;
+    function _init( inCanvas, inOptions ) {
+        var container = inCanvas.parentNode;
+
+        if (inOptions) {
+            _options = _extend(_options, inOptions);    
+        }
         
-        canvas.width    = container.offsetWidth ? container.offsetWidth : this.canvasDefWidth;
-        canvas.height   = container.offsetHeight ? container.offsetHeight : this.canvasDefHeight;
+        inCanvas.width    = container.offsetWidth ? container.offsetWidth : _canvasDefWidth;
+        inCanvas.height   = container.offsetHeight ? container.offsetHeight : _canvasDefHeight;
 
-        this.canvas = canvas;
-        this.context = canvas.getContext("2d");
+        _canvas  = inCanvas;
+        _context = _canvas.getContext("2d");
 
-        this.attachEventListeners();
+        _attachEventListeners();
 
-        this.context.globalCompositeOperation = 'source-over';
-        this.mouseX = this.canvas.width / 2;
-        this.mouseY = this.canvas.height / 2;
-        this.painters = [];
+        _context.globalCompositeOperation = 'source-over';
+        _mouseX = _canvas.width / 2;
+        _mouseY = _canvas.height / 2;
+        _painters = [];
         for (var i = 0; i < 50; i++) {
-            this.painters.push({ 
-                dx: this.canvas.width / 2, 
-                dy: this.canvas.height / 2, 
+            _painters.push({ 
+                dx: _canvas.width / 2, 
+                dy: _canvas.height / 2, 
                 ax: 0, 
                 ay: 0, 
                 div: 0.1, 
                 ease: 0.5
             });//Math.random() * 0.1 + 0.2});
         }
-        this.interval = setInterval(update, 1000/60);
+        _updateInterval = setInterval(update, 1000/60);
         function update() {
             var i;
-            scope.context.lineWidth = scope.brushSize;            
-            scope.context.strokeStyle =  "rgba(" + scope.penColor[0] + ", " + scope.penColor[1] + ", " + scope.penColor[2] + ", " + 0.05 * scope.brushPressure + ")";
-            for (i = 0; i < scope.painters.length; i++) {
-                scope.context.beginPath();
-                scope.context.moveTo(scope.painters[i].dx, scope.painters[i].dy);        
-                scope.painters[i].dx -= scope.painters[i].ax = (scope.painters[i].ax + (scope.painters[i].dx - scope.mouseX) * scope.painters[i].div) * scope.painters[i].ease;
-                scope.painters[i].dy -= scope.painters[i].ay = (scope.painters[i].ay + (scope.painters[i].dy - scope.mouseY) * scope.painters[i].div) * scope.painters[i].ease;
-                scope.context.lineTo(scope.painters[i].dx, scope.painters[i].dy);
-                scope.context.stroke();
+            _context.lineWidth = _options.brushSize;            
+            _context.strokeStyle =  "rgba(" + _options.penColor[0] + ", " + 
+                _options.penColor[1] + ", " + _options.penColor[2] + ", " + 0.05 * _options.brushPressure + ")";
+            for (i = 0; i < _painters.length; i++) {
+                _context.beginPath();
+                _context.moveTo(_painters[i].dx, _painters[i].dy);        
+                _painters[i].dx -= _painters[i].ax = (_painters[i].ax + (_painters[i].dx - _mouseX) * _painters[i].div) * _painters[i].ease;
+                _painters[i].dy -= _painters[i].ay = (_painters[i].ay + (_painters[i].dy - _mouseY) * _painters[i].div) * _painters[i].ease;
+                _context.lineTo(_painters[i].dx, _painters[i].dy);
+                _context.stroke();
             }
         }
-    },
+    }
 
-    destroy: function() {
-        clearInterval(this.interval);
-    },
-
-    strokeStart: function(mouseX, mouseY) {
-        this.mouseX = mouseX;
-        this.mouseY = mouseY;
-        for (var i = 0; i < this.painters.length; i++) {
-            this.painters[i].dx = mouseX;
-            this.painters[i].dy = mouseY;
+    function _strokeStart(mouseX, mouseY) {
+        _mouseX = mouseX;
+        _mouseY = mouseY;
+        for (var i = 0; i < _painters.length; i++) {
+            _painters[i].dx = mouseX;
+            _painters[i].dy = mouseY;
         }
-        this.shouldDraw = true;
-    },
+    }
 
-    stroke: function( mouseX, mouseY ) {
-        this.mouseX = mouseX;
-        this.mouseY = mouseY;
-    },
+    function _stroke( mouseX, mouseY ) {
+        _mouseX = mouseX;
+        _mouseY = mouseY;
+    }
 
-    strokeEnd: function() {
+    function _strokeEnd() {
     
-    },
+    }
 
-
-    attachEventListeners: function() {
-        var scope = this,
-            onCanvasMouseDown = function(event) {
-                scope.strokeStart( event.clientX, event.clientY );
-                window.addEventListener('mousemove', onCanvasMouseMove, false);
-                window.addEventListener('mouseup',   onCanvasMouseUp, false);
+    function _attachEventListeners() {
+        var onCanvasMouseDown = function(event) {
+                _strokeStart(event.pageX - _canvas.offsetLeft, event.pageY  - _canvas.offsetTop);
+                _canvas.addEventListener('mousemove', onCanvasMouseMove, false);
+                _canvas.addEventListener('mouseup',   onCanvasMouseUp, false);
             },
             onCanvasMouseMove = function(event) {    
-                scope.stroke(event.clientX, event.clientY);
+                _stroke(event.pageX - _canvas.offsetLeft, event.pageY  - _canvas.offsetTop);
             },
             onCanvasMouseUp = function() {
-                scope.strokeEnd();
-                window.removeEventListener('mousemove', onCanvasMouseMove, false);
-                window.removeEventListener('mouseup',   onCanvasMouseUp,   false);
+                _strokeEnd();
+                _canvas.removeEventListener('mousemove', onCanvasMouseMove, false);
+                _canvas.removeEventListener('mouseup',   onCanvasMouseUp,   false);
             },
             onCanvasTouchStart = function(event) {
                 if(event.touches.length == 1) {
                     event.preventDefault();
                     
-                    scope.strokeStart( event.touches[0].pageX, event.touches[0].pageY );
+                    _strokeStart( event.touches[0].pageX, event.touches[0].pageY );
                     
-                    window.addEventListener('touchmove', onCanvasTouchMove, false);
-                    window.addEventListener('touchend', onCanvasTouchEnd, false);
+                    _canvas.addEventListener('touchmove', onCanvasTouchMove, false);
+                    _canvas.addEventListener('touchend', onCanvasTouchEnd, false);
                 }
             },
             onCanvasTouchMove = function(event) {
                 if(event.touches.length == 1) {
                     event.preventDefault();
-                    scope.stroke( event.touches[0].pageX, event.touches[0].pageY );
+                    _stroke( event.touches[0].pageX, event.touches[0].pageY );
                 }
             },
             onCanvasTouchEnd = function(event) {
                 if(event.touches.length === 0) {
                     event.preventDefault();
                     
-                    scope.strokeEnd();
+                    _strokeEnd();
 
-                    window.removeEventListener('touchmove', onCanvasTouchMove, false);
-                    window.removeEventListener('touchend', onCanvasTouchEnd, false);
+                    _canvas.removeEventListener('touchmove', onCanvasTouchMove, false);
+                    _canvas.removeEventListener('touchend', onCanvasTouchEnd, false);
                 }
             };
 
-        this.canvas.addEventListener('mousedown', onCanvasMouseDown, false);
-        this.canvas.addEventListener('touchstart', onCanvasTouchStart, false);
+        _canvas.addEventListener('mousedown', onCanvasMouseDown, false);
+        _canvas.addEventListener('touchstart', onCanvasTouchStart, false);
     }
-};
 
+    function _extend(object, properties) {
+        var key, val;
+        if (!object) {
+            object = {};
+        }
+        if (!properties) {
+            properties = {};
+        }
+        for (key in properties) {
+            val = properties[key];
+            object[key] = val;
+        }
+        return object;
+    };
+
+    _init(inCanvas, inOptions);
+}
+ 

@@ -40,10 +40,18 @@
 
         <script type="text/javascript">
           var canvas          = document.getElementById('draw-canvas');
-          new RealisticPen(canvas);
+          new RealisticPen(canvas, {
+            penColor: [150, 0, 0],
+            brushPressure: 1,
+            brushSize: 3
+          });
 
           var canvas2          = document.getElementById('draw-canvas-2');
-          new RealisticPen(canvas2);
+          new RealisticPen(canvas2, {
+            penColor: [0, 150, 0],
+            brushPressure: 1,
+            brushSize: 2
+          });
         </script>
          
     </body>
