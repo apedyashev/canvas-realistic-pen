@@ -18,7 +18,7 @@ Authors:
 
 Options:
 --------
-  penColor       -  Color of the pen. Allowed formats: 
+  - penColor       -  Color of the pen. Allowed formats: 
                     Array - [0, 0, 0], Hex - #ccc, #cfc4c1, rgb(1, 2, 3), rgba(1, 2, 3, 0)
   - brushPressure: - opacity of line
   - brushSize:     - widht of line
