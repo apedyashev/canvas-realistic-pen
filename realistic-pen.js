@@ -137,12 +137,14 @@ function RealisticPen(inCanvas, inOptions) {
 
     function _attachEventListeners() {
         var onCanvasMouseDown = function(event) {
-                _strokeStart(event.pageX - _canvas.offsetLeft, event.pageY  - _canvas.offsetTop);
+                var canvasOffset = _offset(_canvas);
+                _strokeStart(event.pageX - canvasOffset.left, event.pageY  - canvasOffset.top);
                 _canvas.addEventListener('mousemove', onCanvasMouseMove, false);
                 _canvas.addEventListener('mouseup',   onCanvasMouseUp, false);
             },
-            onCanvasMouseMove = function(event) {    
-                _stroke(event.pageX - _canvas.offsetLeft, event.pageY  - _canvas.offsetTop);
+            onCanvasMouseMove = function(event) {  
+                var canvasOffset = _offset(_canvas);  
+                _stroke(event.pageX - canvasOffset.left, event.pageY  - canvasOffset.top);
             },
             onCanvasMouseUp = function() {
                 _strokeEnd();
@@ -153,7 +155,8 @@ function RealisticPen(inCanvas, inOptions) {
                 if(event.touches.length == 1) {
                     event.preventDefault();
                     
-                    _strokeStart( event.touches[0].pageX - _canvas.offsetLeft, event.touches[0].pageY  - _canvas.offsetTop );
+                    var canvasOffset = _offset(_canvas);
+                    _strokeStart( event.touches[0].pageX - canvasOffset.left, event.touches[0].pageY  - canvasOffset.top);
                     
                     _canvas.addEventListener('touchmove', onCanvasTouchMove, false);
                     _canvas.addEventListener('touchend', onCanvasTouchEnd, false);
@@ -162,7 +165,9 @@ function RealisticPen(inCanvas, inOptions) {
             onCanvasTouchMove = function(event) {
                 if(event.touches.length == 1) {
                     event.preventDefault();
-                    _stroke( event.touches[0].pageX - _canvas.offsetLeft, event.touches[0].pageY  - _canvas.offsetTop );
+
+                    var canvasOffset = _offset(_canvas);
+                    _stroke( event.touches[0].pageX - canvasOffset.left, event.touches[0].pageY  - canvasOffset.top);
                 }
             },
             onCanvasTouchEnd = function(event) {
@@ -227,6 +232,33 @@ function RealisticPen(inCanvas, inOptions) {
 
         var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
         return result ? [parseInt(result[1], 16), parseInt(result[2], 16), parseInt(result[3], 16)] : [0, 0, 0];
+    }
+
+    function _offset(elem) {
+        var docElem, win,
+            box = { top: 0, left: 0 },
+            doc = elem && elem.ownerDocument,
+            isWindow = function( obj ) {
+                return obj != null && obj === obj.window;
+            },
+            getWindow = function ( elem ) {
+                return isWindow( elem ) ? elem : elem.nodeType === 9 && elem.defaultView;
+            };
+
+        if (!doc) {
+            return;
+        }
+
+        docElem = doc.documentElement;
+
+        if ( typeof elem.getBoundingClientRect !== typeof undefined ) {
+            box = elem.getBoundingClientRect();
+        }
+        win = getWindow( doc );
+        return {
+            top: box.top + win.pageYOffset - docElem.clientTop,
+            left: box.left + win.pageXOffset - docElem.clientLeft
+        };
     }
 
     _init(inCanvas, inOptions);
