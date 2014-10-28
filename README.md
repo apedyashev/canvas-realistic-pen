@@ -46,3 +46,15 @@ Example:
   brush.setBrushSize(5);
 ```
 
+Version History
+===============
+
+0.0.2
+-----
+Added canvas resizing on window resize
+
+0.0.1
+-----
+First release
+
+
