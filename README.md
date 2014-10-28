@@ -1,8 +1,10 @@
 canvas-realistic-pen
 ====================
 
-Library  for smooth pen-like drawing on canvas
+Library  for smooth pen-like drawing on canvas written in vanilla JavaScript
 -----------------------------------------------
+
+![screenshot](screenshot.png)
 
 This is refactored and enhanced version of code taken from this post: http://stackoverflow.com/a/10661872/2248909
 
