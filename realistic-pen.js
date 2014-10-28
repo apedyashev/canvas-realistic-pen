@@ -153,7 +153,7 @@ function RealisticPen(inCanvas, inOptions) {
                 if(event.touches.length == 1) {
                     event.preventDefault();
                     
-                    _strokeStart( event.touches[0].pageX, event.touches[0].pageY );
+                    _strokeStart( event.touches[0].pageX - _canvas.offsetLeft, event.touches[0].pageY  - _canvas.offsetTop );
                     
                     _canvas.addEventListener('touchmove', onCanvasTouchMove, false);
                     _canvas.addEventListener('touchend', onCanvasTouchEnd, false);
@@ -162,7 +162,7 @@ function RealisticPen(inCanvas, inOptions) {
             onCanvasTouchMove = function(event) {
                 if(event.touches.length == 1) {
                     event.preventDefault();
-                    _stroke( event.touches[0].pageX, event.touches[0].pageY );
+                    _stroke( event.touches[0].pageX - _canvas.offsetLeft, event.touches[0].pageY  - _canvas.offsetTop );
                 }
             },
             onCanvasTouchEnd = function(event) {
