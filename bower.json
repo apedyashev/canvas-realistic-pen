@@ -1,0 +1,28 @@
+{
+  "name": "canvas-realistic-pen",
+  "version": "0.0.1",
+  "homepage": "https://github.com/apedyashev/canvas-realistic-pen",
+  "authors": [
+    "apedyashev <alexey.pedyashev@gmail.com>"
+  ],
+  "description": "Javascript library for super smooth drawing on HTML5 canvas",
+  "main": "realistic-pen.js",
+  "moduleType": [
+    "globals"
+  ],
+  "keywords": [
+    "canvas",
+    "smooth",
+    "drawing",
+    "HTML5",
+    "signature"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}
