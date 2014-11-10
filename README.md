@@ -26,17 +26,13 @@ Options:
 --------
   - penColor       -  Color of the pen. Allowed formats: 
                     Array - [0, 0, 0], Hex - #ccc, #cfc4c1, rgb(1, 2, 3), rgba(1, 2, 3, 0)
-  - brushPressure: - opacity of line
   - brushSize:     - widht of line
-  - brushesCount   - Count of lines that will be used to draw
 
 Interface:
 ----------
   - destroy()                           - destroys the pen
   - setPenColor(inColor)                - sets penColor 
-  - setBrushPressure(inBrushPressure)   - sets brushPressure
   - setBrushSize(inBrushSize)           - sets brushSize
-  - setBrushesCount(inBrushesCount)     - sets brushesCount
 
 Example:
 --------
@@ -44,9 +40,7 @@ Example:
   var canvas          = document.getElementById('draw-canvas');
   brush = new RealisticPen(canvas, {
       penColor: [217, 101, 110],
-      brushPressure: 1,
-      brushSize: 3,
-      brushesCount: 5
+      brushSize: 3 
   });
   brush.setPenColor('#cfa');
   brush.setBrushSize(5);
@@ -54,6 +48,16 @@ Example:
 
 Version History
 ===============
+
+1.0.0
+-----
+  - Fixed aliasing problem
+  - Removed following API methods:
+    * setBrushesCount()
+    * brushPressure()
+  - Removed config options:
+    * brushesCount
+    * brushPressure
 
 0.0.2
 -----

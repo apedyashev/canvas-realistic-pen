@@ -1,4 +1,6 @@
 /**
+* canvas-realistic-pen@1.0.0
+*
 * Library for smooth pen-like drawing on canvas
 * 
 * This is refactored and enhanced version of code taken from this post: http://stackoverflow.com/a/10661872/2248909
@@ -11,24 +13,18 @@
 * Options:
 *   penColor       -  Color of the pen. Allowed formats: 
 *                     Array - [0, 0, 0], Hex - #ccc, #cfc4c1, rgb(1, 2, 3), rgba(1, 2, 3, 0)
-*   brushPressure: - opacity of line
 *   brushSize:     - widht of line
-*   brushesCount   - Count of lines that will be used to draw
 *
 * Interface:
 *   destroy()                           - destroys the pen
 *   setPenColor(inColor)                - sets penColor 
-*   setBrushPressure(inBrushPressure)   - sets brushPressure
 *   setBrushSize(inBrushSize)           - sets brushSize
-*   setBrushesCount(inBrushesCount)     - sets brushesCount
 *
 * Example:
 *   var canvas          = document.getElementById('draw-canvas');
 *   brush = new RealisticPen(canvas, {
 *       penColor: [217, 101, 110],
-*       brushPressure: 1,
 *       brushSize: 3,
-*       brushesCount: 5
 *   });
 *
 */
@@ -38,6 +34,11 @@ function RealisticPen(inCanvas, inOptions) {
         _mouseY = null,
         _mouseXStart = null,
         _mouseYStart = null,
+        _prevCoords = {
+            x: null,
+            y: null
+        },
+        _currentDelta = null,
         _painters = null,
         _updateInterval = null,
         _canvas = null,
@@ -46,10 +47,60 @@ function RealisticPen(inCanvas, inOptions) {
         _canvasDefHeight = 200,
         _options = {
             penColor: [0, 0, 0],
-            brushPressure: 1,
-            brushSize: 3,
-            brushesCount: 4
-        };
+            brushSize: 3
+        },
+        _brushSizes = {
+          1: 4.5, 
+          2: 4.25, 
+          3: 4, 
+          4: 3.75, 
+          5: 3.5, 
+          6: 3.25, 
+          7: 3, 
+          8: 2.75, 
+          9: 2.5, 
+          10: 2.25, 
+          11: 2.2, 
+          12: 2.15, 
+          13: 2.1, 
+          14: 2.05, 
+          15: 2, 
+          16: 1.95, 
+          17: 1.9, 
+          18: 1.85,  
+          19: 1.8,  
+          20: 1.75, 
+          21: 1.7, 
+          22: 1.65, 
+          23: 1.6, 
+          24: 1.55, 
+          25: 1.5, 
+          26: 1.48, 
+          27: 1.46, 
+          28: 1.44, 
+          29: 1.42, 
+          30: 1.4, 
+          31: 1.38, 
+          32: 1.36,  
+          33: 1.34, 
+          34: 1.32, 
+          35: 1.3, 
+          36: 1.28, 
+          37: 1.26, 
+          38: 1.24, 
+          39: 1.22, 
+          40: 1.2, 
+          41: 1.18, 
+          42: 1.16, 
+          43: 1.14, 
+          44: 1.12, 
+          45: 1.1, 
+          46: 1.08, 
+          47: 1.06,  
+          48: 1.04, 
+          49: 1.02, 
+          50: 1
+      };
 
     this.destroy = function() {
         clearInterval(_updateInterval);
@@ -59,18 +110,9 @@ function RealisticPen(inCanvas, inOptions) {
         _options.penColor = _ensureRgb(inColor);
     };
 
-    this.setBrushPressure = function(inBrushPressure) {
-        _options.brushPressure = inBrushPressure;
-    };
-
     this.setBrushSize = function(inBrushSize) {
         _options.brushSize = inBrushSize;
     };
-
-    this.setBrushesCount = function(inBrushesCount) {
-        _options.brushesCount = inBrushesCount;
-    };
-
 
     function _init( inCanvas, inOptions ) {
         _container = inCanvas.parentNode;
@@ -93,56 +135,66 @@ function RealisticPen(inCanvas, inOptions) {
         _mouseY = _canvas.height / 2;
         _painters = [];
 
-        for (var i = 0; i < _options.brushesCount; i++) {
+        for (var i = 0; i < 1; i++) {
             _painters.push({ 
                 dx: _canvas.width / 2, 
                 dy: _canvas.height / 2, 
                 ax: 0, 
                 ay: 0, 
-                div: 0.1, 
-                ease: 0.5 + i*0.005
+                div: 0.08,
+                ease: 0.7
             }); 
         }
 
         _updateInterval = setInterval(update, 1000/90);
         
-        var pointsBuff = [];
+        function makeStrokeStyle(inOpacity){
+            var opacity = inOpacity ? inOpacity : 1;
+            return "rgba(" + _options.penColor[0] + ", " + 
+                _options.penColor[1] + ", " + _options.penColor[2] + ",  " + opacity + ")";
+        }
+
+        var maxLineWidht = 0;//Math.max.apply(null, _brushSizes);
+        for(var key in _brushSizes) {
+            maxLineWidht = Math.max(maxLineWidht, _brushSizes[key]);
+        }
 
         function update() {
-            var i;
-            _context.lineWidth = _options.brushSize; 
+            var i,
+                lineWidth = _brushSizes[_currentDelta] + _options.brushSize / maxLineWidht;
+                // console.log(lineWidth);
 
-            _context.strokeStyle =  "rgba(" + _options.penColor[0] + ", " + 
-                _options.penColor[1] + ", " + _options.penColor[2] + ",  " + _options.brushPressure + ")";
-            var pixelsInfo = {minY: 100000, maxY: -100000};
             for (i = 0; i < _painters.length; i++) {
                 _context.beginPath();
-                _context.moveTo(_painters[i].dx, _painters[i].dy); 
+
+                var xPrev = _painters[i].dx,
+                    yPrev = _painters[i].dy;
+
                 _painters[i].ax = (_painters[i].ax + (_painters[i].dx - _mouseX) * _painters[i].div) * _painters[i].ease;
                 _painters[i].dx -= _painters[i].ax;
                 _painters[i].ay = (_painters[i].ay + (_painters[i].dy - _mouseY) * _painters[i].div) * _painters[i].ease;
                 _painters[i].dy -= _painters[i].ay;
+
+                // draw background line with opacity to smooth primaary line's edges 
+                _context.strokeStyle =  makeStrokeStyle(0.35);
+                _context.lineWidth = lineWidth + 2;
+                _context.lineCap    = 'butt'; 
+                _context.lineJoin   = 'miter';
+
+                _context.moveTo(xPrev, yPrev); 
                 _context.lineTo(_painters[i].dx, _painters[i].dy);
                 _context.stroke();
+                
 
-                       
-                // pixelsInfo[Math.round(_painters[i].dx)].minY = Math.min(
-                //     Math.round(pixelsInfo[Math.round(_painters[i].dx)].minY), Math.round(_painters[i].dy));
-                // pixelsInfo[Math.round(_painters[i].dx)].minY = Math.max(
-                //     Math.round(pixelsInfo[Math.round(_painters[i].dx)].minY), Math.round(_painters[i].dy));
-            }
+                //draw primary line without opacity
+                _context.strokeStyle =  makeStrokeStyle(1);
+                _context.lineWidth = lineWidth;
+                _context.lineCap    = 'round'; 
+                _context.lineJoin   = 'round';
 
-            // if(_painters.length > 0) { 
-            //     pointsBuff.push(pixelsInfo);
-
-            //     if (pointsBuff.length > 2) { 
-            //         var pixels1 = pointsBuff.shift(),
-            //             pixels2 = pointsBuff[0];
-            //     }
-
-            // }
-           
-            if(window.isPressed){
+                _context.moveTo(xPrev, yPrev);
+                _context.lineTo(_painters[i].dx, _painters[i].dy);
+                _context.stroke();
             }
         }
     }
@@ -159,8 +211,20 @@ function RealisticPen(inCanvas, inOptions) {
     }
 
     function _stroke( mouseX, mouseY ) {
+        _prevCoords.x = _mouseX;
+        _prevCoords.y = _mouseY;
+
         _mouseX = mouseX;
         _mouseY = mouseY;
+
+
+        var delta = Math.abs(_prevCoords.x - _mouseX);
+        if ((_currentDelta !== null) && (2 <= Math.abs(_currentDelta - delta))) {
+             _currentDelta = (_currentDelta < delta) ? (_currentDelta + 1) : (_currentDelta - 1); 
+        }
+        else {
+            _currentDelta = delta;
+        }
     }
 
     function _strokeEnd(mouseX, mouseY) {
@@ -185,7 +249,6 @@ function RealisticPen(inCanvas, inOptions) {
                 _strokeStart(event.pageX - canvasOffset.left, event.pageY  - canvasOffset.top);
                 _canvas.addEventListener('mousemove', onCanvasMouseMove, false);
                 _canvas.addEventListener('mouseup',   onCanvasMouseUp, false);
-                window.isPressed = true;
             },
             onCanvasMouseMove = function(event) {  
                 var canvasOffset = _offset(_canvas);  
@@ -196,7 +259,6 @@ function RealisticPen(inCanvas, inOptions) {
                 _strokeEnd(event.pageX - canvasOffset.left, event.pageY  - canvasOffset.top);
                 _canvas.removeEventListener('mousemove', onCanvasMouseMove, false);
                 _canvas.removeEventListener('mouseup',   onCanvasMouseUp,   false);
-                window.isPressed = false;
             },
             onCanvasTouchStart = function(event) {
                 if(event.touches.length == 1) {

@@ -48,17 +48,14 @@
         <script type="text/javascript">
           window.canvas          = document.getElementById('draw-canvas');
           window.brush1 = new RealisticPen(canvas, {
-            penColor: '#606060',//'#cf5',
-            brushSize: 6,
-            brushesCount: 5,
-            brushPressure: 0.25
-          });
+            penColor: '#000', 
+            brushSize: 1,
+           });
 
           window.canvas2          = document.getElementById('draw-canvas-2');
           window.brush2 = new RealisticPen(canvas2, {
-            penColor: [0, 150, 0],
-            brushPressure: 0.5,
-            brushSize: 2
+            penColor: [0, 150, 0], // [r, g, b]
+            brushSize: 10
           });
 
           function clearCanvas(canvas){
