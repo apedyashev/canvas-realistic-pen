@@ -10,6 +10,12 @@ Library  for smooth pen-like drawing on canvas written in vanilla JavaScript
 
 This is refactored and enhanced version of code taken from this post: http://stackoverflow.com/a/10661872/2248909
 
+Installation
+------------
+```
+bower install canvas-realistic-pen --save
+```
+
 Authors: 
 --------
   - mrdob.com
@@ -51,7 +57,7 @@ Version History
 
 0.0.2
 -----
-Added canvas resizing on window resize
+  Added canvas resizing on window resize
 
 0.0.1
 -----
